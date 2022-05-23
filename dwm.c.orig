@@ -546,6 +546,8 @@ cleanupmon(Monitor *mon)
 void
 clientmessage(XEvent *e)
 {
+	XClassHint ch = {"dwmsystray", "dwmsystray"};
+  XSetClassHint(dpy, c->win, &ch);
 	XClientMessageEvent *cme = &e->xclient;
 	Client *c = wintoclient(cme->window);
 

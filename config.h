@@ -3,23 +3,26 @@
 
 /* appearance */
 static const unsigned int borderpx  = 1;        /* border pixel of windows */
-static const unsigned int gappx     = 10;        /* gaps between windows */
+static const unsigned int gappx     = 5;        /* gaps between windows */
 static const unsigned int snap      = 32;       /* snap pixel */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar4*/
-static const char *fonts[]          = { "IoseVka Nerd Font:size=14"};
-static const char dmenufont[]       = "IoseVka Nerd Font:size=14";
+static const char *fonts[]          = {"Iosevka:size=14"};
+static const char dmenufont[]       = "Iosevka:size=14";
 static const char col_gray1[]       = "#222222";
 static const char col_gray2[]       = "#444444";
 static const char col_gray3[]       = "#bbbbbb";
 static const char col_gray4[]       = "#eeeeee";
 static const char col_cyan[]        = "#005577";
-static const unsigned int baralpha = 0xd0;
+static const unsigned int baralpha = 0xA0;
 static const unsigned int borderalpha = OPAQUE;
 static const char *colors[][3]      = {
-	/*               fg         bg         border   */
+	/*               fg         bg         border   	
 	[SchemeNorm] = { col_gray3, col_gray1, col_gray2 },
+	[SchemeSel]  = { col_gray4, col_cyan,  col_cyan  },*/
+	[SchemeNorm] = { "#c5c8c6", "#1d1f21", col_gray2 },
 	[SchemeSel]  = { col_gray4, col_cyan,  col_cyan  },
+
 };
 static const unsigned int alphas[][3]      = {
 	/*               fg      bg        border     */
@@ -36,7 +39,9 @@ static const Rule rules[] = {
 	 *	WM_NAME(STRING) = title
 	 */
 	/* class      instance    title       tags mask     isfloating   monitor */
-	{ "Gimp",     NULL,       NULL,       0,            1,           -1 },
+	{ "Gimp",     NULL,       NULL,       0,            0,           -1 },
+	{ "Steam",    NULL,       NULL,       0,            1,           -1 },
+	{ "flameshot",    NULL,       NULL,       0,            1,           -1 },
 };
 
 /* layout(s) */
@@ -65,21 +70,27 @@ static const Layout layouts[] = {
 
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
-static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
+static const char *dmenucmd[] = { "rofi","-show","drun","-show-icons"};
 static const char *termcmd[]  = { "st", NULL };
 static const char *ranger[]  = { "st", "-e","ranger",NULL };
 static const char *slockcmd[]  = { "slock",NULL };
 static const char scratchpadname[] = "scratchpad";
 static const char *scratchpadcmd[] = { "st", "-t", scratchpadname, "-g", "70x20", NULL };
-static const char *scrotcmd[] = { "/home/aiden/.dwm/scrot.sh", NULL };
+static const char *scrotcmd[] = { "flameshot","gui", NULL };
 static const char *pulsemixercmd[] = { "st","-e","pulsemixer", NULL };
-static const char *vacmd[] = { "/home/aiden/.dwm/vadd.sh", NULL };
-static const char *vccmd[] = { "/home/aiden/.dwm/vcut.sh", NULL };
+static const char *vmutecmd[] = { "pamixer","-t", NULL };
+static const char *vacmd[] = { "pamixer","-i","10", NULL };
+static const char *vccmd[] = { "pamixer","-d","10", NULL };
+static const char *ilight[] = { "light","-A","10", NULL };
+static const char *ulight[] = { "light","-U","10", NULL };
 
 static Key keys[] = {
 	/* modifier                     key        function        argument */
-	{0,															XF86XK_AudioRaiseVolume, spawn,   {.v = vacmd } },
-  {0,															XF86XK_AudioLowerVolume, spawn,   {.v = vccmd } },
+	{0,															XF86XK_AudioMute,         spawn,   {.v = vmutecmd} },
+	{0,															XF86XK_AudioRaiseVolume,  spawn,   {.v = vacmd } },
+  {0,															XF86XK_AudioLowerVolume,  spawn,   {.v = vccmd } },
+	{0,															XF86XK_MonBrightnessUp,   spawn,   {.v = ilight } },
+  {0,															XF86XK_MonBrightnessDown, spawn,   {.v = ulight } },
 	{ MODKEY,                       XK_grave,  togglescratch,  {.v = scratchpadcmd } },
 	{ MODKEY,                       XK_p,      spawn,          {.v = dmenucmd } },
 	{ MODKEY,                       XK_r,      spawn,          {.v = ranger  } },
@@ -88,12 +99,14 @@ static Key keys[] = {
 	{ MODKEY|ShiftMask,             XK_d,      spawn,          {.v = slockcmd } },
 	{ MODKEY|ControlMask,           XK_a,      spawn,          {.v = scrotcmd } },
 	{ MODKEY,                       XK_b,      togglebar,      {0} },
+	{ MODKEY|ShiftMask,             XK_j,      rotatestack,    {.i = +1 } },
+	{ MODKEY|ShiftMask,             XK_k,      rotatestack,    {.i = -1 } },
 	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
 	{ MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
 	{ MODKEY,                       XK_i,      incnmaster,     {.i = +1 } },
 	{ MODKEY,                       XK_d,      incnmaster,     {.i = -1 } },
-	{ MODKEY,                       XK_h,      setmfact,       {.f = -0.05} },
-	{ MODKEY,                       XK_l,      setmfact,       {.f = +0.05} },
+	{ MODKEY|ShiftMask,             XK_h,      setmfact,       {.f = -0.05} },
+	{ MODKEY|ShiftMask,             XK_l,      setmfact,       {.f = +0.05} },
 	{ MODKEY,                       XK_Return, zoom,           {0} },
 	{ MODKEY,                       XK_Tab,    view,           {0} },
 	{ MODKEY|ShiftMask,             XK_c,      killclient,     {0} },
@@ -138,5 +151,5 @@ static Button buttons[] = {
 	{ ClkTagBar,            0,              Button3,        toggleview,     {0} },
 	{ ClkTagBar,            MODKEY,         Button1,        tag,            {0} },
 	{ ClkTagBar,            MODKEY,         Button3,        toggletag,      {0} },
-};
 
+};
